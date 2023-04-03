@@ -1,25 +1,29 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, Props}
-import repositories.AuctionRepository
 import play.api.libs.json.Json
+import repositories.AuctionRepository
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class AuctionsWebSocketActor(out: ActorRef, auctionRepository: AuctionRepository)(implicit ec: ExecutionContext) extends Actor {
+class AuctionsWebSocketActor(
+    out: ActorRef,
+    auctionRepository: AuctionRepository
+) extends Actor {
   import AuctionsWebSocketActor._
 
-  override def receive: Receive = {
-    case FetchAuctions(page, pageSize) =>
-      val skip = (page - 1) * pageSize
-      auctionRepository.findAll(pageSize, skip).future.map { auctions =>
-        out ! Json.toJson(auctions).toString
-      }
+  override def receive: Receive = { case FetchAuctions(page, pageSize) =>
+    val skip = (page - 1) * pageSize
+    auctionRepository.findAll(pageSize, skip).map { auctions =>
+      out ! Json.toJson(auctions).toString
+    }
   }
 }
 
 object AuctionsWebSocketActor {
-  def props(out: ActorRef, auctionRepository: AuctionRepository)(implicit ec: ExecutionContext): Props = Props(new AuctionsWebSocketActor(out, auctionRepository))
+  def props(out: ActorRef, auctionRepository: AuctionRepository): Props = Props(
+    new AuctionsWebSocketActor(out, auctionRepository)
+  )
 
   case class FetchAuctions(page: Int, pageSize: Int)
 }

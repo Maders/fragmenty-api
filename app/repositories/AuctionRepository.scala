@@ -1,25 +1,55 @@
 package repositories
 
+import akka.stream.Materializer
+import akka.stream.scaladsl._
 import models.Auction
-import org.mongodb.scala.MongoCollection
-import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.model.Sorts
-import utils.MongoDBConnector
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Promise}
+import org.mongodb.scala._
+import org.mongodb.scala.model.Sorts._
+import org.reactivestreams.Publisher
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+import com.google.inject.ImplementedBy
 
-class AuctionRepository @Inject()(implicit ec: ExecutionContext) {
-  private val collection: MongoCollection[Document] = MongoDBConnector.database.getCollection("numbers")
+@ImplementedBy(classOf[AuctionRepositoryImpl])
+trait AuctionRepository {
+  def findAll(limit: Int, skip: Int): Future[Seq[Auction]]
 
-  def findAll(limit: Int, skip: Int): Promise[Seq[Auction]] = {
-    val promise = Promise[Seq[Auction]]()
-    val results = collection.find()
-      .sort(Sorts.descending("_id"))
+  def findAllPublisher(limit: Int, skip: Int): Publisher[Auction]
+}
+
+@Singleton
+class AuctionRepositoryImpl @Inject() (
+    mongoClient: MongoClient
+)(implicit ec: ExecutionContext, mat: Materializer)
+    extends AuctionRepository {
+  private val database: MongoDatabase = mongoClient.getDatabase("fragmenty")
+  private val collection: MongoCollection[Document] =
+    database.getCollection("numbers")
+
+  override def findAll(limit: Int, skip: Int): Future[Seq[Auction]] = {
+    collection
+      .find()
+      .sort(descending("auctionEndTimestamp"))
       .skip(skip)
       .limit(limit)
       .toFuture()
-    promise.completeWith(results.map(_.map(documentToAuction)))
-    promise
+      .map(_.map(documentToAuction))
+  }
+
+  override def findAllPublisher(limit: Int, skip: Int): Publisher[Auction] = {
+    val observable = collection
+      .find()
+      .sort(descending("auctionEndTimestamp"))
+      .skip(skip)
+      .limit(limit)
+      .toObservable()
+
+    val futureAuctions = observable.toFuture().map(_.map(documentToAuction))
+
+    Source
+      .future(futureAuctions)
+      .flatMapConcat(auctions => Source(auctions))
+      .runWith(Sink.asPublisher(false))
   }
 
   private def documentToAuction(document: Document): Auction = {

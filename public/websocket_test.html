@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Test</title>
 </head>
 <body>
 <h1>WebSocket Test</h1>
+<button onclick="authenticateUser()">Authenticate user</button>
 <button id="connect">Connect</button>
 <button id="disconnect" disabled>Disconnect</button>
 <pre id="output"></pre>
@@ -14,6 +15,15 @@
         const connectButton = document.getElementById('connect');
         const disconnectButton = document.getElementById('disconnect');
         const output = document.getElementById('output');
+
+        async function authenticateUser() {
+            const response = await fetch('/authenticateUser', { credentials: 'same-origin' });
+            if (response.ok) {
+              console.log('User authenticated');
+            } else {
+              console.log('Failed to authenticate user');
+            }
+        }
 
         let socket;
 
@@ -44,6 +54,8 @@
         disconnectButton.addEventListener('click', () => {
             socket.close();
         });
-    </script>
+
+
+</script>
 </body>
 </html>

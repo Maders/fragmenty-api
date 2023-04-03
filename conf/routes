@@ -9,5 +9,8 @@ GET     /                           controllers.HomeController.index()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /api/auctions                 controllers.UserController.getAuctions(page: Int ?= 1, pageSize: Int ?= 10)
-GET     /ws/auctions                  controllers.UserController.auctionsWebSocket
+GET     /api/auctions                 controllers.AuctionController.getAuctions(page: Int ?= 1, pageSize: Int ?= 10)
+GET     /ws/auctions                  controllers.AuctionController.auctionsWebSocket
+
+GET     /authenticateUser             controllers.UserController.authenticateUser
+GET     /ws-test.html    controllers.Assets.at(path="/public", file="websocket_test.html")
