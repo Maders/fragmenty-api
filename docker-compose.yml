@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    image: fragmenty-api
+    ports:
+      - "9000:9000"
+    environment:
+      - APPLICATION_SECRET=${APPLICATION_SECRET}
+      - MONGODB_URI=${MONGODB_URI}
+    volumes:
+      - sbt_cache:/root/.cache
+
+volumes:
+  sbt_cache:
