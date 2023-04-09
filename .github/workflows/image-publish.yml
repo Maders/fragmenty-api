@@ -20,6 +20,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io/${{ github.repository }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PAT }}
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -33,8 +40,6 @@ jobs:
           context: .
           push: true
           tags: ${{ vars.ECR_REPOSITORY_URI }}:api-${{ github.ref_name }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-          # cache-from: type=registry,ref=${{ vars.ECR_REPOSITORY_URI }}:api-build-cache
-          # cache-to: type=registry,ref=${{ vars.ECR_REPOSITORY_URI }}:api-build-cache,mode=max
+          # because first letter of my username is in uppercase it can't use ${{ github.repository }} context
+          cache-from: type=registry,ref=ghcr.io/maders/fragmenty-api:buildcache
+          cache-to: type=registry,ref=ghcr.io/maders/fragmenty-api:buildcache,mode=max
