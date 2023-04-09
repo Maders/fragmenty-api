@@ -39,9 +39,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.ECR_REPOSITORY_URI }}:api-${{ github.ref_name }}
-          cache-from: type=registry,ref=${{ secrets.ECR_REPOSITORY_URI }}:api-build-cache
-          cache-to: type=registry,ref=${{ secrets.ECR_REPOSITORY_URI }}:api-build-cache,mode=max
+          tags: ${{ env.ECR_REPOSITORY_URI }}:api-${{ github.ref_name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
-          # cache-from: type=local,src=/tmp/.buildx-cache
-          # cache-to: type=local,dest=/tmp/.buildx-cache
+          # cache-from: type=registry,ref=${{ secrets.ECR_REPOSITORY_URI }}:api-build-cache
+          # cache-to: type=registry,ref=${{ secrets.ECR_REPOSITORY_URI }}:api-build-cache,mode=max
