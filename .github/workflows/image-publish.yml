@@ -7,6 +7,9 @@ on:
     branches:
       - '*' # for debug purpose
 
+env:
+  AWS_REGION: 'eu-central-1'
+
 jobs:
   push_to_ecr:
     runs-on: ubuntu-latest
