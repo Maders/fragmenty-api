@@ -48,8 +48,8 @@ jobs:
           context: .
           push: true
           tags: ${{ vars.ECR_REPOSITORY_URI }}:api-${{ github.ref_name }}
-          cache-from: type=registry,ref=ghcr.io/Maders/fragmenty-api:buildcache
-          cache-to: type=registry,ref=ghcr.io/Maders/fragmenty-api:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/maders/fragmenty-api:buildcache
+          cache-to: type=registry,ref=ghcr.io/maders/fragmenty-api:buildcache,mode=max
 
           # cache-from: type=local,src=/tmp/.buildx-cache
           # cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
