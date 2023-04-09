@@ -4,11 +4,6 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - '*' # for debug purpose
-
-env:
-  AWS_REGION: 'eu-central-1'
 
 jobs:
   push_to_ecr:
@@ -19,13 +14,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2 # More information on this action can be found below in the 'AWS Credentials' section
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -43,5 +36,5 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-          # cache-from: type=registry,ref=${{ secrets.ECR_REPOSITORY_URI }}:api-build-cache
-          # cache-to: type=registry,ref=${{ secrets.ECR_REPOSITORY_URI }}:api-build-cache,mode=max
+          # cache-from: type=registry,ref=${{ vars.ECR_REPOSITORY_URI }}:api-build-cache
+          # cache-to: type=registry,ref=${{ vars.ECR_REPOSITORY_URI }}:api-build-cache,mode=max
