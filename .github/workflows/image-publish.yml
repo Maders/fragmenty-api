@@ -31,8 +31,8 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
+          registry: ghcr.io/${{ github.repository }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Amazon ECR
@@ -48,6 +48,7 @@ jobs:
           context: .
           push: true
           tags: ${{ vars.ECR_REPOSITORY_URI }}:api-${{ github.ref_name }}
+          # because first letter of my username is in uppercase it can't use ${{ github.repository }} context
           cache-from: type=registry,ref=ghcr.io/maders/fragmenty-api:buildcache
           cache-to: type=registry,ref=ghcr.io/maders/fragmenty-api:buildcache,mode=max
 
