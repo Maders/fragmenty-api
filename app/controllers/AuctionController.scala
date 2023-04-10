@@ -1,5 +1,6 @@
 package controllers
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl._
@@ -7,8 +8,8 @@ import play.api.libs.json._
 import play.api.mvc._
 import repositories._
 import akka.stream.scaladsl.Source
-import scala.concurrent.duration._
 
+import scala.concurrent.duration._
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
@@ -34,15 +35,47 @@ class AuctionController @Inject() (
   def auctionsWebSocket: WebSocket = {
     WebSocket.accept[JsValue, JsValue] { request =>
       val source = Source
-        .tick(0.seconds, 1.minute, ())
+        .tick(0.seconds, 5.minute, ())
         .flatMapConcat { _ =>
           Source
-            .fromPublisher(auctionRepository.findAllPublisher(10, 0))
+            .fromPublisher(auctionRepository.findAllPublisher())
             .map(Json.toJson(_))
-            .grouped(10)
-            .map(
-              _.foldLeft(JsArray())((acc, jsValue) => acc ++ Json.arr(jsValue))
-            )
+            .fold(JsArray())((acc, jsValue) => acc ++ Json.arr(jsValue))
+            .mapMaterializedValue(_ => NotUsed)
+        }
+
+      val flow = Flow.fromSinkAndSource(Sink.ignore, source)
+      flow
+    }
+  }
+
+  def futureAuctionsWebSocket: WebSocket = {
+    WebSocket.accept[JsValue, JsValue] { request =>
+      val source = Source
+        .tick(0.seconds, 5.minute, ())
+        .flatMapConcat { _ =>
+          Source
+            .fromPublisher(auctionRepository.findFutureAuctions())
+            .map(Json.toJson(_))
+            .fold(JsArray())((acc, jsValue) => acc ++ Json.arr(jsValue))
+            .mapMaterializedValue(_ => NotUsed)
+        }
+
+      val flow = Flow.fromSinkAndSource(Sink.ignore, source)
+      flow
+    }
+  }
+
+  def pastAuctionsWebSocket: WebSocket = {
+    WebSocket.accept[JsValue, JsValue] { request =>
+      val source = Source
+        .tick(0.seconds, 5.minute, ())
+        .flatMapConcat { _ =>
+          Source
+            .fromPublisher(auctionRepository.findPastAuctions())
+            .map(Json.toJson(_))
+            .fold(JsArray())((acc, jsValue) => acc ++ Json.arr(jsValue))
+            .mapMaterializedValue(_ => NotUsed)
         }
 
       val flow = Flow.fromSinkAndSource(Sink.ignore, source)

@@ -5,16 +5,23 @@ import akka.stream.scaladsl._
 import models.Auction
 import org.mongodb.scala._
 import org.mongodb.scala.model.Sorts._
+import org.mongodb.scala.model.Filters._
 import org.reactivestreams.Publisher
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import com.google.inject.ImplementedBy
+import java.time.Instant
 
 @ImplementedBy(classOf[AuctionRepositoryImpl])
 trait AuctionRepository {
   def findAll(limit: Int, skip: Int): Future[Seq[Auction]]
 
-  def findAllPublisher(limit: Int, skip: Int): Publisher[Auction]
+  def findAllPublisher(): Publisher[Auction]
+
+  def findFutureAuctions(): Publisher[Auction]
+
+  def findPastAuctions(): Publisher[Auction]
+
 }
 
 @Singleton
@@ -36,15 +43,41 @@ class AuctionRepositoryImpl @Inject() (
       .map(_.map(documentToAuction))
   }
 
-  override def findAllPublisher(limit: Int, skip: Int): Publisher[Auction] = {
+  override def findAllPublisher(): Publisher[Auction] = {
     val observable = collection
       .find()
       .sort(descending("auctionEndTimestamp"))
-      .skip(skip)
-      .limit(limit)
       .toObservable()
 
     val futureAuctions = observable.toFuture().map(_.map(documentToAuction))
+
+    Source
+      .future(futureAuctions)
+      .flatMapConcat(auctions => Source(auctions))
+      .runWith(Sink.asPublisher(false))
+  }
+
+  override def findFutureAuctions(): Publisher[Auction] = {
+    val now = Instant.now()
+    val futureAuctions = collection
+      .find(gt("auctionEndTimestamp", now.toString))
+      .sort(ascending("auctionEndTimestamp"))
+      .toFuture()
+      .map(_.map(documentToAuction))
+
+    Source
+      .future(futureAuctions)
+      .flatMapConcat(auctions => Source(auctions))
+      .runWith(Sink.asPublisher(false))
+  }
+
+  override def findPastAuctions(): Publisher[Auction] = {
+    val now = Instant.now()
+    val futureAuctions = collection
+      .find(lt("auctionEndTimestamp", now.toString))
+      .sort(ascending("auctionEndTimestamp"))
+      .toFuture()
+      .map(_.map(documentToAuction))
 
     Source
       .future(futureAuctions)
