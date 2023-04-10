@@ -38,6 +38,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          platforms: linux/amd64
           push: true
           tags: ${{ vars.ECR_REPOSITORY_URI }}:api-${{ github.ref_name }}
           # because first letter of my username is in uppercase it can't use ${{ github.repository }} context
