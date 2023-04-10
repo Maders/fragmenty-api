@@ -9,3 +9,6 @@ target
 /RUNNING_PID
 
 *.env
+
+.metals
+.vscode
