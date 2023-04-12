@@ -22,3 +22,9 @@ cd fragmenty-api
 4. Start the API server.
 
    `sbt run`
+
+## Related Project:
+
+- The [`fragmenty`](https://github.com/Maders/fragmenty) repository contains the infrastructure provisioning code for the Fragmenty project using Amazon Web Services (AWS). The infrastructure is organized into different components.
+
+- The [`fragmenty-spider`](https://github.com/Maders/fragmenty-spider) repository contains the web crawler code for the Fragmenty project. The web crawler is built with the Scrapy framework.
