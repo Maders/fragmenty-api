@@ -18,10 +18,6 @@ class AuctionController @Inject() (
 )(implicit ec: ExecutionContext, mat: Materializer)
     extends BaseController {
 
-  def authenticateUser: Action[AnyContent] = Action { implicit request =>
-    Ok("User authenticated").withSession("user" -> "test_user")
-  }
-
   def getAuctions(page: Int, pageSize: Int): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val skip = (page - 1) * pageSize

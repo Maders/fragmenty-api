@@ -14,7 +14,7 @@ GET     /ws/auctions                  controllers.AuctionController.auctionsWebS
 GET     /ws/future-auctions           controllers.AuctionController.futureAuctionsWebSocket
 GET     /ws/past-auctions             controllers.AuctionController.pastAuctionsWebSocket
 
-GET     /authenticateUser             controllers.UserController.authenticateUser
+GET     /authenticate                 controllers.UserController.authenticateUser
 GET     /ws-test.html                 controllers.Assets.at(path="/public", file="websocket_test.html")
 
-GET     /healthcheck                   controllers.HealthCheckController.healthCheck()
+GET     /healthcheck                  controllers.HealthCheckController.healthCheck()
