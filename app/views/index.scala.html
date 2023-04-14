@@ -1,5 +1,11 @@
 @()
 
 @main("Memorability Score vs Price") {
+  <section>
+    <span>show mode: </span>
+    <button class="button"><a href="/">All</a></button>
+    <button class="button"><a href="/?mode=past">Pasts</a></button>
+    <button class="button"><a href="/?mode=future">Current</a></button>
+  </section>
   <div id="chart"></div>
 }

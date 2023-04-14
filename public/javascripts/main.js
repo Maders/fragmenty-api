@@ -50,5 +50,18 @@ const createPlot = (data) => {
 
 const onWebSocketMessage = (event) => createPlot(JSON.parse(event.data));
 
-const webSocket = new WebSocket('wss://fragmenty.cloud/ws/auctions');
+const mode = new URLSearchParams(window.location.search).get('mode');
+function getAPIEndpointByMode(mode) {
+  return (
+    {
+      future: 'future-auctions',
+      past: 'past-auctions',
+    }[mode] || 'auctions'
+  );
+}
+
+//
+const webSocket = new WebSocket(
+  `wss://fragmenty.cloud/ws/${getAPIEndpointByMode(mode)}`
+);
 webSocket.addEventListener('message', onWebSocketMessage);
