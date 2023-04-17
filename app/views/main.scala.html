@@ -10,28 +10,34 @@
 <html lang="en">
     <head>
         @* Here's where we render the page title `String`. *@
-        <title>@title</title>
+        <!-- <title>@title</title> -->
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <style>
-          #chart {
-            width: 100%;
-            height: calc(100vh - 100px);
-          }
-          .button {
-            padding: 2px 16px;
-            min-width: 100px;
-          }
-          a { text-decoration: none; }
-          a:visited { color: black; }
-        </style>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/fragment.ico")">
+        <!-- Primary Meta Tags -->
+        <title>Fragment Numbers Insight - Telegram Data Analytics & Visualization</title>
+        <meta name="title" content="Fragment Numbers Insight - Telegram Data Analytics & Visualization">
+        <meta name="description" content="Explore and analyze phone number data from the Fragment Telegram platform with our powerful RESTful and WebSocket APIs. Discover patterns and insights through interactive charts.">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://fragmenty.cloud/">
+        <meta property="og:title" content="Fragment Numbers Insight - Telegram Data Analytics & Visualization">
+        <meta property="og:description" content="Explore and analyze phone number data from the Fragment Telegram platform with our powerful RESTful and WebSocket APIs. Discover patterns and insights through interactive charts.">
+        <meta property="og:image" content="https://fragmenty.cloud@routes.Assets.versioned("images/fragment_icon.svg")">
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary">
+        <meta property="twitter:url" content="https://fragmenty.cloud/">
+        <meta property="twitter:title" content="Fragment Numbers Insight - Telegram Data Analytics & Visualization">
+        <meta property="twitter:description" content="Explore and analyze phone number data from the Fragment Telegram platform with our powerful RESTful and WebSocket APIs. Discover patterns and insights through interactive charts.">
+        <meta property="twitter:image" content="https://fragmenty.cloud@routes.Assets.versioned("images/fragment_icon.svg")">
     </head>
     <body>
         @* And here's where we render the `Html` object containing
          * the page content. *@
         @content
 
-      <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
-      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
+        <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
     </body>
 </html>
